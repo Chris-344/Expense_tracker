@@ -1,12 +1,11 @@
-// ignore_for_file: must_be_immutable, prefer_final_fields
-
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 class AddItemPopup extends StatefulWidget {
   final BuildContext context;
   bool isDeposit;
-  final List expenseArr;
+  List expenseArr;
   final TextEditingController itemController;
   final TextEditingController amountController;
   final Function(Map<String, dynamic>) onAdd;
@@ -27,9 +26,13 @@ class AddItemPopup extends StatefulWidget {
 
 class _AddItemPopupState extends State<AddItemPopup> {
   bool _isDeposit = true;
+
   @override
   Widget build(BuildContext context) {
     String capitalize(String x) => x[0].toUpperCase() + x.substring(1);
+
+    List _expenseArr = widget.expenseArr;
+    final _transactionData = Hive.box('TransactionData');
 
     return AlertDialog(
       title: Center(child: Text("Add Transaction")),
@@ -90,11 +93,12 @@ class _AddItemPopupState extends State<AddItemPopup> {
             final newItem = {
               'Item': capitalize(widget.itemController.text),
               'amount': widget.amountController.text,
-              // 'date': "02/06/2025",
               'date': DateFormat("dd/MM/yyyy").format(DateTime.now()),
               'isDeposit': _isDeposit,
             };
             widget.onAdd(newItem);
+            _expenseArr.add(newItem);
+            _transactionData.put("Transactions", newItem);
             Navigator.pop(context);
           },
           child: Text("Add"),

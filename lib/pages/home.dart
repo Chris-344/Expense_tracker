@@ -4,7 +4,6 @@ import 'package:expense_tracker/util/add_item_popup.dart';
 import 'package:expense_tracker/util/edit_item_popup.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class ExpenseItem {
   final String item;
@@ -39,8 +38,9 @@ class _HomeState extends State<Home> {
 
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
+
   final List _transactionArray = [];
-  final List _dateArray = [DateFormat("dd/MM/yyyy").format(DateTime.now())];
+
   bool isDeposit = true;
 
   void editItemPopup(int index) {
@@ -50,6 +50,7 @@ class _HomeState extends State<Home> {
     final TextEditingController amountController = TextEditingController(
       text: _transactionArray[index]["amount"],
     );
+
     showDialog(
       context: context,
       builder:
@@ -68,10 +69,6 @@ class _HomeState extends State<Home> {
 
   void addExpense(Map<String, dynamic> item) {
     setState(() {
-      if (!_dateArray.contains(item['date'])) {
-        _dateArray.add(item['date']);
-        _dateArray.sort((a, b) => b.compareTo(a));
-      }
       _transactionArray.add(item);
     });
     _itemController.clear();
@@ -109,90 +106,42 @@ class _HomeState extends State<Home> {
         ),
       ),
       body: ListView.builder(
-        itemCount: _dateArray.length,
-        itemBuilder:
-            (context, dateIndex) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Date Header with Balance
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
+        itemCount: _transactionArray.length,
+        itemBuilder: (context, index) {
+          final transaction = _transactionArray[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: ListTile(
+              tileColor:
+                  transaction['isDeposit']
+                      ? Colors.lightGreen
+                      : Colors.pinkAccent,
+              onLongPress: () => deleteItem(_transactionArray, index),
+              title: Text(
+                transaction['Item'],
+                style: const TextStyle(fontSize: 25),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Text(
-                        "Balance on ${_dateArray[dateIndex]}: ",
-                        style: const TextStyle(fontSize: 18),
-                      ),
                       const Icon(Icons.currency_rupee, size: 18),
                       Text(
-                        calculateFinal(
-                          _transactionArray,
-                          _dateArray[dateIndex],
-                        ).toString(),
+                        '${transaction['amount']}',
                         style: const TextStyle(fontSize: 18),
                       ),
                     ],
                   ),
-                ),
-                // Transactions for this date
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount:
-                      _transactionArray
-                          .where((tx) => tx['date'] == _dateArray[dateIndex])
-                          .length,
-                  itemBuilder: (context, index) {
-                    final transactions =
-                        _transactionArray
-                            .where((tx) => tx['date'] == _dateArray[dateIndex])
-                            .toList();
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: 4.0,
-                      ),
-                      child: ListTile(
-                        tileColor:
-                            transactions[index]['isDeposit']
-                                ? Colors.lightGreen
-                                : Colors.pinkAccent,
-                        onLongPress:
-                            () => deleteItem(
-                              _transactionArray,
-                              _transactionArray.indexOf(transactions[index]),
-                            ),
-                        title: Text(
-                          transactions[index]['Item'],
-                          style: const TextStyle(fontSize: 25),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.currency_rupee, size: 18),
-                                Text(
-                                  '${transactions[index]['amount']}',
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          onPressed:
-                              () => editItemPopup(
-                                _transactionArray.indexOf(transactions[index]),
-                              ),
-                          icon: const Icon(Icons.edit),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                ],
+              ),
+              trailing: IconButton(
+                onPressed: () => editItemPopup(index),
+                icon: const Icon(Icons.edit),
+              ),
             ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
