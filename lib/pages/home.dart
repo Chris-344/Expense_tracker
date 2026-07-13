@@ -36,7 +36,7 @@ class _HomeState extends State<Home> {
   final TextEditingController _amountController = TextEditingController();
 
   final itemData = Hive.box("TransactionData");
-  late List _transactionArray = itemData.get("Transactions");
+  late final List _transactionArray = itemData.get("Transactions");
 
   bool isDeposit = true;
 

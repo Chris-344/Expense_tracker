@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 class AddItemPopup extends StatefulWidget {
@@ -30,9 +29,6 @@ class _AddItemPopupState extends State<AddItemPopup> {
   @override
   Widget build(BuildContext context) {
     String capitalize(String x) => x[0].toUpperCase() + x.substring(1);
-
-    // List _expenseArr = widget.expenseArr;
-    // final _transactionData = Hive.box('TransactionData');
 
     return AlertDialog(
       title: Center(child: Text("Add Transaction")),
