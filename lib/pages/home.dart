@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_final_fields
-
 import 'package:expense_tracker/util/add_item_popup.dart';
 import 'package:expense_tracker/util/edit_item_popup.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -34,12 +32,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final itemData = Hive.box("TransactionData");
-
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
 
-  final List _transactionArray = [];
+  final itemData = Hive.box("TransactionData");
+  late List _transactionArray = itemData.get("Transactions");
 
   bool isDeposit = true;
 
@@ -65,7 +62,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void deleteItem(List arr, int index) => setState(() => arr.removeAt(index));
+  void deleteItem(List arr, int index) {
+    setState(() => arr.removeAt(index));
+    itemData.put("Transactions", _transactionArray);
+  }
 
   void addExpense(Map<String, dynamic> item) {
     setState(() {
@@ -73,19 +73,8 @@ class _HomeState extends State<Home> {
     });
     _itemController.clear();
     _amountController.clear();
-  }
 
-  double calculateFinal(List items, String date) {
-    double daysTotal = 0;
-    for (int i = 0; i < items.length; i++) {
-      if (items[i]['date'] != date) continue; // Changed condition
-      if (items[i]['isDeposit']) {
-        daysTotal += double.parse(items[i]['amount']);
-      } else {
-        daysTotal -= double.parse(items[i]['amount']);
-      }
-    }
-    return daysTotal;
+    itemData.put("Transactions", _transactionArray);
   }
 
   void editItem(int index, String item, String amount, bool isDeposit) {
@@ -117,10 +106,12 @@ class _HomeState extends State<Home> {
                       ? Colors.lightGreen
                       : Colors.pinkAccent,
               onLongPress: () => deleteItem(_transactionArray, index),
+
               title: Text(
                 transaction['Item'],
                 style: const TextStyle(fontSize: 25),
               ),
+
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

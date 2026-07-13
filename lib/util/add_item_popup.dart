@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 class AddItemPopup extends StatefulWidget {
@@ -31,8 +31,8 @@ class _AddItemPopupState extends State<AddItemPopup> {
   Widget build(BuildContext context) {
     String capitalize(String x) => x[0].toUpperCase() + x.substring(1);
 
-    List _expenseArr = widget.expenseArr;
-    final _transactionData = Hive.box('TransactionData');
+    // List _expenseArr = widget.expenseArr;
+    // final _transactionData = Hive.box('TransactionData');
 
     return AlertDialog(
       title: Center(child: Text("Add Transaction")),
@@ -97,8 +97,7 @@ class _AddItemPopupState extends State<AddItemPopup> {
               'isDeposit': _isDeposit,
             };
             widget.onAdd(newItem);
-            _expenseArr.add(newItem);
-            _transactionData.put("Transactions", newItem);
+
             Navigator.pop(context);
           },
           child: Text("Add"),
