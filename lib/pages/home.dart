@@ -1,5 +1,6 @@
 import 'package:expense_tracker/util/add_item_popup.dart';
 import 'package:expense_tracker/util/edit_item_popup.dart';
+import 'package:expense_tracker/util/mydrawer.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/material.dart';
 
@@ -88,6 +89,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Mydrawer(),
       appBar: AppBar(
         backgroundColor: Colors.amber,
         title: const Center(

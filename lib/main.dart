@@ -1,3 +1,4 @@
+import 'package:expense_tracker/pages/filter.dart';
 import 'package:expense_tracker/pages/home.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -14,6 +15,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: Home());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Home(),
+      routes: {
+        '/home': (context) => const Home(),
+        '/filter': (context) => const Filter(),
+      },
+    );
   }
 }

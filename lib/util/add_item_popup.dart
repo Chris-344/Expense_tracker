@@ -1,3 +1,4 @@
+import 'package:expense_tracker/util/dateselector.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -43,6 +44,11 @@ class _AddItemPopupState extends State<AddItemPopup> {
             controller: widget.amountController,
             decoration: InputDecoration(labelText: "Amount"),
             keyboardType: TextInputType.number,
+          ),
+          Dateselector(
+            inputtype: "Transaction Date",
+            controller: TextEditingController(),
+            onDateChanged: () {},
           ),
 
           Row(
