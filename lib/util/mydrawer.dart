@@ -17,7 +17,7 @@ class Mydrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
+            leading: const Icon(Icons.filter_alt),
             title: const Text('Filter'),
             onTap: () {
               Navigator.pushNamed(context, '/filter');

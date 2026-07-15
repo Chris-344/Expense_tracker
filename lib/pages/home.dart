@@ -35,6 +35,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   final itemData = Hive.box("TransactionData");
   late final List _transactionArray = itemData.get("Transactions");
@@ -148,6 +149,7 @@ class _HomeState extends State<Home> {
                   expenseArr: _transactionArray,
                   itemController: _itemController,
                   amountController: _amountController,
+                  dateController:_dateController,
                   onAdd: addExpense,
                 ),
           );

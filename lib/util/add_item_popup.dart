@@ -1,6 +1,5 @@
 import 'package:expense_tracker/util/dateselector.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class AddItemPopup extends StatefulWidget {
   final BuildContext context;
@@ -8,6 +7,7 @@ class AddItemPopup extends StatefulWidget {
   List expenseArr;
   final TextEditingController itemController;
   final TextEditingController amountController;
+  final TextEditingController dateController;
   final Function(Map<String, dynamic>) onAdd;
 
   AddItemPopup({
@@ -17,6 +17,7 @@ class AddItemPopup extends StatefulWidget {
     required this.amountController,
     required this.onAdd,
     required this.isDeposit,
+    required this.dateController,
     super.key,
   });
 
@@ -47,7 +48,7 @@ class _AddItemPopupState extends State<AddItemPopup> {
           ),
           Dateselector(
             inputtype: "Transaction Date",
-            controller: TextEditingController(),
+            controller: widget.dateController,
             onDateChanged: () {},
           ),
 
@@ -95,7 +96,7 @@ class _AddItemPopupState extends State<AddItemPopup> {
             final newItem = {
               'Item': capitalize(widget.itemController.text),
               'amount': widget.amountController.text,
-              'date': DateFormat("dd/MM/yyyy").format(DateTime.now()),
+              'date': widget.dateController.text,
               'isDeposit': _isDeposit,
             };
             widget.onAdd(newItem);
