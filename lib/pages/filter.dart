@@ -45,6 +45,25 @@ class _FilterState extends State<Filter> {
       }
     }
 
+    int total = 0;
+    int withdrawlTotal = 0;
+    int depositTotal = 0;
+
+    for (Map item in _filteredArray) {
+      if (item['isDeposit']) {
+        total += int.parse(item['amount']);
+      } else {
+        total -= int.parse(item['amount']);
+      }
+    }
+    for (Map item in _filteredArray) {
+      if (item['isDeposit']) {
+        depositTotal += int.parse(item['amount']);
+      } else {
+        withdrawlTotal += int.parse(item['amount']);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Filter')),
       body: Column(
@@ -53,6 +72,33 @@ class _FilterState extends State<Filter> {
             inputtype: "Transaction date",
             controller: _currentDate,
             onDateChanged: () => setState(() {}),
+          ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Center(
+                child: Text(
+                  "Deposit\n $depositTotal",
+                  style: TextStyle(fontSize: 25),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Center(
+                child: Text(
+                  "Withdrawl\n$withdrawlTotal",
+                  style: TextStyle(fontSize: 25),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Center(
+                child: Text(
+                  "Total\n $total",
+                  style: TextStyle(fontSize: 25),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
           Expanded(
             child: ListView.builder(
@@ -65,7 +111,6 @@ class _FilterState extends State<Filter> {
                         children: [
                           Text(_filteredArray[index]['Item'] + '    '),
                           Text(_filteredArray[index]['date']),
-                          
                         ],
                       ),
                       tileColor: Colors.amber,

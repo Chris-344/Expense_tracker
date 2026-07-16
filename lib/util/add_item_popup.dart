@@ -49,7 +49,7 @@ class _AddItemPopupState extends State<AddItemPopup> {
           Dateselector(
             inputtype: "Transaction Date",
             controller: widget.dateController,
-            onDateChanged: () {},
+            onDateChanged: () => setState(() {}),
           ),
 
           Row(

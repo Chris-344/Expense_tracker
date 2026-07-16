@@ -20,6 +20,9 @@ class Dateselector extends StatefulWidget {
 class _DateselectorState extends State<Dateselector> {
   @override
   Widget build(BuildContext context) {
+    if (widget.controller.text.isEmpty) {
+      widget.controller.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    }
     return TextField(
       controller: widget.controller,
       decoration: InputDecoration(

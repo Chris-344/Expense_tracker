@@ -1,22 +1,31 @@
+import 'package:expense_tracker/util/dateselector.dart';
 import 'package:flutter/material.dart';
 
 class EditItemPopup extends StatefulWidget {
   final TextEditingController itemController;
   final TextEditingController amountController;
+  final TextEditingController dateController;
   final List transactionArray;
   final int index;
   final BuildContext context;
-  final Function(int index, String item, String amount, bool isDeposit)
-  onEdit; // Add this
+  final Function(
+    int index,
+    String item,
+    String amount,
+    bool isDeposit,
+    String date,
+  )
+  onEdit;
 
   const EditItemPopup({
     super.key,
     required this.context,
     required this.itemController,
     required this.amountController,
+    required this.dateController,
     required this.transactionArray,
     required this.index,
-    required this.onEdit, // Add this
+    required this.onEdit,
   });
 
   @override
@@ -24,17 +33,50 @@ class EditItemPopup extends StatefulWidget {
 }
 
 class _EditItemPopupState extends State<EditItemPopup> {
+  late bool isDeposit;
+  String? errorText;
+
+  @override
+  void initState() {
+    super.initState();
+    isDeposit = widget.transactionArray[widget.index]['isDeposit'];
+    widget.dateController.text = widget.transactionArray[widget.index]['date'];
+  }
+
+  String capitalize(String str) {
+    if (str.isEmpty) return str;
+    return str[0].toUpperCase() + str.substring(1);
+  }
+
   void saveChange() {
-    String capitalize(String x) => x[0].toUpperCase() + x.substring(1);
+    final rawItem = widget.itemController.text.trim();
+    final rawAmount = widget.amountController.text.trim();
 
-    final editedItem = capitalize(widget.itemController.text);
+    if (rawItem.isEmpty) {
+      setState(() => errorText = 'Item name cannot be empty');
+      return;
+    }
+
+    final parsedAmount = double.tryParse(rawAmount);
+    if (parsedAmount == null) {
+      setState(() => errorText = 'Enter a valid amount');
+      return;
+    }
+
+    final editedItem = capitalize(rawItem);
     final editedAmount = widget.amountController.text;
+    final editedDate = widget.dateController.text;
 
-    widget.onEdit(widget.index, editedItem, editedAmount, isDeposit);
+    widget.onEdit(
+      widget.index,
+      editedItem,
+      editedAmount,
+      isDeposit,
+      editedDate,
+    );
     Navigator.pop(context);
   }
 
-  bool isDeposit = true;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -46,6 +88,19 @@ class _EditItemPopupState extends State<EditItemPopup> {
           TextField(
             controller: widget.amountController,
             keyboardType: TextInputType.number,
+          ),
+          if (errorText != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Text(
+                errorText!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+          Dateselector(
+            inputtype: "Transaction date",
+            controller: widget.dateController,
+            onDateChanged: () => setState(() {}),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

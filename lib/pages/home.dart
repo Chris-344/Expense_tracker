@@ -58,6 +58,7 @@ class _HomeState extends State<Home> {
             itemController: itemController,
             amountController: amountController,
             transactionArray: _transactionArray,
+            dateController: _dateController,
             index: index,
             onEdit: editItem,
           ),
@@ -79,16 +80,43 @@ class _HomeState extends State<Home> {
     itemData.put("Transactions", _transactionArray);
   }
 
-  void editItem(int index, String item, String amount, bool isDeposit) {
+  void editItem(
+    int index,
+    String item,
+    String amount,
+    bool isDeposit,
+    String date,
+  ) {
     setState(() {
       _transactionArray[index]['Item'] = item;
       _transactionArray[index]['amount'] = amount;
       _transactionArray[index]['isDeposit'] = isDeposit;
+      _transactionArray[index]['date'] = date;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    int withdrawlTotal = 0;
+    int depositTotal = 0;
+    int total = 0;
+
+    for (Map item in _transactionArray) {
+      if (item['isDeposit']) {
+        total += int.parse(item['amount']);
+      } else {
+        total -= int.parse(item['amount']);
+      }
+    }
+
+    for (Map item in _transactionArray) {
+      if (item['isDeposit']) {
+        depositTotal += int.parse(item['amount']);
+      } else {
+        withdrawlTotal += int.parse(item['amount']);
+      }
+    }
+
     return Scaffold(
       drawer: Mydrawer(),
       appBar: AppBar(
@@ -97,45 +125,80 @@ class _HomeState extends State<Home> {
           child: Text("Finance Tracker", textAlign: TextAlign.center),
         ),
       ),
-      body: ListView.builder(
-        itemCount: _transactionArray.length,
-        itemBuilder: (context, index) {
-          final transaction = _transactionArray[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-            child: ListTile(
-              tileColor:
-                  transaction['isDeposit']
-                      ? Colors.lightGreen
-                      : Colors.pinkAccent,
-              onLongPress: () => deleteItem(_transactionArray, index),
-
-              title: Text(
-                transaction['Item'],
-                style: const TextStyle(fontSize: 25),
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Center(
+                child: Text(
+                  "Deposit\n $depositTotal",
+                  style: TextStyle(fontSize: 25),
+                  textAlign: TextAlign.center,
+                ),
               ),
-
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.currency_rupee, size: 18),
-                      Text(
-                        '${transaction['amount']}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    ],
+              Center(
+                child: Text(
+                  "Withdrawl\n$withdrawlTotal",
+                  style: TextStyle(fontSize: 25),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Center(
+                child: Text(
+                  "Total\n $total",
+                  style: TextStyle(fontSize: 25),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _transactionArray.length,
+              itemBuilder: (context, index) {
+                final transaction = _transactionArray[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
                   ),
-                ],
-              ),
-              trailing: IconButton(
-                onPressed: () => editItemPopup(index),
-                icon: const Icon(Icons.edit),
-              ),
+                  child: ListTile(
+                    tileColor:
+                        transaction['isDeposit']
+                            ? const Color.fromARGB(255, 157, 220, 85)
+                            : Colors.pinkAccent,
+                    onLongPress: () => deleteItem(_transactionArray, index),
+
+                    title: Text(
+                      transaction['Item'],
+                      style: const TextStyle(fontSize: 25),
+                    ),
+
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.currency_rupee, size: 18),
+                            Text(
+                              '${transaction['amount']}',
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    trailing: IconButton(
+                      onPressed: () => editItemPopup(index),
+                      icon: const Icon(Icons.edit),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -149,7 +212,7 @@ class _HomeState extends State<Home> {
                   expenseArr: _transactionArray,
                   itemController: _itemController,
                   amountController: _amountController,
-                  dateController:_dateController,
+                  dateController: _dateController,
                   onAdd: addExpense,
                 ),
           );
